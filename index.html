@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pepper's Burger and Company</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Montserrat:wght@400;600;800&family=Shrikhand&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">PEPPER'S</div>
+            <button class="cart-toggle-btn" id="btn-abrir-carrito">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span id="cart-counter" class="cart-counter">0</span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="cart-overlay" id="cart-overlay"></div>
+
+    <aside class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header">
+            <h2>Tu Pedido</h2>
+            <button class="close-cart-btn" id="btn-cerrar-carrito"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="cart-body">
+            <ul id="lista-carrito" class="cart-list"></ul>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-options">
+                <div class="form-group">
+                    <label for="metodo-pago">Método de pago:</label>
+                    <select id="metodo-pago">
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="Transferencia">Transferencia</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="metodo-entrega">Entrega:</label>
+                    <select id="metodo-entrega" onchange="toggleDireccion()">
+                        <option value="Retiro por local">Retirar por el local</option>
+                        <option value="Delivery">Delivery</option>
+                    </select>
+                </div>
+                <div class="form-group" id="grupo-direccion" style="display: none;">
+                    <label for="direccion-envio">Dirección de envío:</label>
+                    <input type="text" id="direccion-envio" placeholder="Ej: San Martín 123">
+                </div>
+            </div>
+
+            <div class="cart-notes">
+                <label for="pedido-notas" style="font-size: 0.9rem; font-weight: 800; display: block; margin-bottom: 5px;">Aclaraciones (Opcional):</label>
+                <textarea id="pedido-notas" placeholder="Ej: Cheesy sin cebolla..."></textarea>
+            </div>
+            
+            <div class="cart-total-box">
+                <span>Total:</span>
+                <span id="precio-total">$0</span>
+            </div>
+            <button id="btn-whatsapp" class="btn-whatsapp" disabled>Pedir por WhatsApp</button>
+        </div>
+    </aside>
+
+    <div class="main-content-wrapper">
+        <header class="hero" id="inicio">
+            <div class="hero-content">
+                <h1 class="landing-title">Date el gusto,<br><span class="highlight">te lo merecés.</span></h1>
+                <a href="#menu-seccion" class="btn-hero">Hacer Pedido</a>
+            </div>
+        </header>
+
+        <main class="menu-container" id="menu-seccion">
+            <h2 class="section-title">Nuestras Burgers</h2>
+            <p class="menu-note">Todas las hamburguesas incluyen papas sazonadas.</p>
+            <div id="productos-contenedor" class="productos-grid"></div>
+
+            <h2 class="section-title extras-title">Extras</h2>
+            <div id="extras-contenedor" class="productos-grid"></div>
+
+            <h2 class="section-title extras-title">Bebidas</h2>
+            <div id="bebidas-contenedor" class="productos-grid"></div>
+        </main>
+
+        <footer class="site-footer">
+            <div class="footer-info">
+                <p><i class="fa-solid fa-location-dot"></i> Libertad 4597 esq. Italia, Mar del Plata</p>
+                <p><i class="fa-regular fa-clock"></i> Martes a Domingo 20:00 - 23:00</p>
+            </div>
+            <a href="https://www.instagram.com/peppers.mdp/" target="_blank" class="btn-instagram">
+                <i class="fa-brands fa-instagram"></i> Seguinos en Instagram
+            </a>
+        </footer>
+    </div>
+
+    <div id="notificacion" class="toast-notification">¡Agregado al pedido!</div>
+    <script src="app.js"></script>
+</body>
+</html>
