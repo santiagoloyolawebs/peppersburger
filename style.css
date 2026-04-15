@@ -6,6 +6,7 @@
     --fuente-logo: 'Shrikhand', serif; 
     --fuente-texto: 'Montserrat', sans-serif;
     --fuente-detalle: 'Gochi Hand', cursive; 
+    --fuente-archivo: 'Archivo Black', sans-serif; 
     --sombra-fuerte: 0 0 30px rgba(0,0,0,0.3);
     --sombra-suave: 0 4px 15px rgba(0,0,0,0.05);
 }
@@ -44,7 +45,19 @@ body.no-scroll { overflow: hidden; }
     width: 100%; padding: 0 30px;
     display: flex; justify-content: space-between; align-items: center; 
 }
-.nav-logo { font-family: var(--fuente-logo); color: var(--rojo-peppers); font-size: 1.8rem; letter-spacing: 1px;}
+
+/* Estilos para el logo en imagen */
+.nav-logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo-img {
+    height: 45px; /* Tamaño ideal para desktop */
+    width: auto;
+    object-fit: contain;
+}
+
 .cart-toggle-btn { background: none; border: none; font-size: 1.5rem; color: var(--rojo-peppers); cursor: pointer; position: relative; }
 .cart-counter {
     position: absolute; top: -8px; right: -10px;
@@ -55,22 +68,23 @@ body.no-scroll { overflow: hidden; }
 .hero {
     height: 70vh; display: flex; justify-content: center; align-items: center;
     text-align: center; border-bottom: 2px dashed var(--rojo-peppers);
-    background-image: url('textura-papel.jpg'); 
+    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url('portada.jpg'); 
     background-size: cover; background-position: center; background-repeat: no-repeat;
 }
 
 .hero-content { max-width: 800px; padding: 20px; }
 
 .landing-title {
-    font-family: var(--fuente-logo); font-size: 5rem;
+    font-family: var(--fuente-archivo); 
+    font-size: 6rem;
     color: var(--blanco-puro); line-height: 1.1;
     margin-bottom: 40px; text-shadow: 4px 4px 10px rgba(0,0,0,0.5);
 }
 
-.landing-title .highlight {
-    color: #ffcc00; font-family: var(--fuente-detalle);
-    font-size: 6rem; display: inline-block;
-    transform: rotate(-3deg); margin-top: 5px;
+.landing-title .hero-subtitle {
+    font-size: 2.5rem;
+    display: block;
+    margin-top: 5px;
 }
 
 .btn-hero {
@@ -110,13 +124,13 @@ body.no-scroll { overflow: hidden; }
 .product-title { font-family: var(--fuente-texto); font-size: 1.5rem; font-weight: 900; margin-bottom: 5px; color: var(--texto-oscuro); text-transform: uppercase;}
 
 .product-desc { 
-    font-family: var(--fuente-detalle);
-    font-size: 1.3rem; 
-    color: var(--rojo-peppers); 
+    font-family: var(--fuente-archivo); 
+    font-size: 0.95rem; 
+    color: var(--texto-oscuro); 
     margin-bottom: 15px; 
     flex-grow: 1; 
-    line-height: 1.2; 
-    letter-spacing: 1px;
+    line-height: 1.3; 
+    letter-spacing: 0.5px;
 }
 
 .product-actions { display: flex; flex-direction: column; gap: 10px; }
@@ -156,7 +170,6 @@ body.no-scroll { overflow: hidden; }
     font-family: var(--fuente-texto); font-size: 0.9rem; outline: none; background: #fafafa;
 }
 
-/* FIX ACLARACIONES */
 .cart-notes { margin-bottom: 15px; }
 .cart-notes textarea {
     width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc;
@@ -198,8 +211,6 @@ body.no-scroll { overflow: hidden; }
     opacity: 0; 
     transition: all 0.3s ease; 
     pointer-events: none; 
-    
-    /* Agregá esta línea para centrar el texto */
     text-align: center; 
 }
 .toast-notification.show { transform: translateX(-50%) translateY(0); opacity: 1;}
@@ -214,13 +225,16 @@ body.no-scroll { overflow: hidden; }
 @media (max-width: 768px) {
     body { padding-top: 60px; } 
     .navbar { height: 60px; padding: 0 15px; }
+    
+    .logo-img { height: 35px; } /* Un poco más chico en móvil para que no sature la barra */
+
     .hero { height: 60vh; padding: 20px 15px; }
-    .landing-title { font-size: 3.5rem; margin-bottom: 30px;}
-    .landing-title .highlight { font-size: 4.5rem; }
+    .landing-title { font-size: 2.8rem; margin-bottom: 20px;}
+    .landing-title .hero-subtitle { font-size: 1.2rem; }
+    .btn-hero { margin-top: 60px; }
     .product-img { height: 180px; }
 }
 
-/* Estilos para el efecto de vuelo (Más lento) */
 .flying-item {
     position: fixed;
     z-index: 9999;
@@ -229,7 +243,6 @@ body.no-scroll { overflow: hidden; }
     background-color: #ff4757; 
     border-radius: 50%;
     pointer-events: none;
-    /* Cambiado a 1.2s para que no vaya tan rápido */
     transition: all 1.2s cubic-bezier(0.19, 1, 0.22, 1); 
     display: flex;
     align-items: center;
@@ -238,7 +251,6 @@ body.no-scroll { overflow: hidden; }
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
-/* Animación de sacudida para el carrito */
 @keyframes cart-bounce {
     0% { transform: scale(1); }
     50% { transform: scale(1.3); }

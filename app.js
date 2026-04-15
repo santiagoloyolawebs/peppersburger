@@ -25,7 +25,7 @@ const menuBurgers = [
         variantes: [{ nombre: "Doble", precio: 15500 }, { nombre: "Triple", precio: 16500 }, { nombre: "X4", precio: 18000 }]
     },
     {
-        id: "b6", nombre: "CHEESEMIX", ingredientes: "Medallón, Cheddar, Provolone, Cebolla Crispy, Aderezo Pepper's",
+        id: "b6", nombre: "CHEESEMIX", ingredientes: "Medallón, Cheddar, Cebolla Crispy, Aderezo Pepper's",
         imagen: "https://images.unsplash.com/photo-1549611016-3a70d82b5040?w=500&q=80",
         variantes: [{ nombre: "Doble", precio: 15500 }, { nombre: "Triple", precio: 16500 }, { nombre: "X4", precio: 18000 }]
     }
@@ -94,23 +94,18 @@ function renderizarMenu() {
 function animarVuelo(event) {
     const btnCarrito = document.getElementById('btn-abrir-carrito');
     const coordsCarrito = btnCarrito.getBoundingClientRect();
-    
     const particle = document.createElement('div');
     particle.className = 'flying-item';
     particle.innerHTML = '<i class="fa-solid fa-burger"></i>';
-    
     particle.style.left = `${event.clientX - 20}px`;
     particle.style.top = `${event.clientY - 20}px`;
-    
     document.body.appendChild(particle);
-    
     setTimeout(() => {
         particle.style.left = `${coordsCarrito.left + (coordsCarrito.width / 2) - 20}px`;
         particle.style.top = `${coordsCarrito.top + (coordsCarrito.height / 2) - 20}px`;
         particle.style.transform = 'scale(0.3) rotate(360deg)';
         particle.style.opacity = '0.7';
     }, 50);
-
     setTimeout(() => {
         particle.remove();
         activarSacudidaCarrito();
