@@ -1,46 +1,51 @@
 const menuBurgers = [
     {
         id: "b1", nombre: "CHEESY", ingredientes: "Medallón, Cheddar, Cebolla, Aderezo 1/4, Pepinillo",
-        imagen: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=80",
+        imagen: "assets/cheesy.jpeg",
         variantes: [{ nombre: "Doble", precio: 15500 }, { nombre: "Triple", precio: 16500 }, { nombre: "X4", precio: 18000 }]
     },
     {
         id: "b2", nombre: "CHEESEBACON", ingredientes: "Medallón, Cheddar, Bacon, Aderezo Pepper's",
-        imagen: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=500&q=80",
+        imagen: "assets/CHEESEBACON.jpg",
         variantes: [{ nombre: "Doble", precio: 15500 }, { nombre: "Triple", precio: 16500 }, { nombre: "X4", precio: 18000 }]
     },
     {
         id: "b3", nombre: "BIG PEPPER", ingredientes: "Medallón, Cheddar, Cebolla, Lechuga, Pepinillo, Aderezo Pepper's",
-        imagen: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=500&q=80",
+        imagen: "assets/BigPEPPER.jpeg",
         variantes: [{ nombre: "Doble", precio: 15500 }, { nombre: "Triple", precio: 16500 }, { nombre: "X4", precio: 18000 }]
     },
     {
         id: "b4", nombre: "SMOKE AMERICAN", ingredientes: "Medallón, Cheddar, Lechuga, Tomate, Aderezo Pepper's",
-        imagen: "https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=500&q=80",
+        imagen: "assets/SmokeAmerican.jpeg",
         variantes: [{ nombre: "Doble", precio: 15500 }, { nombre: "Triple", precio: 16500 }, { nombre: "X4", precio: 18000 }]
     },
     {
         id: "b5", nombre: "OKLAHOMA", ingredientes: "Medallón, Cheddar, Cebolla, Aderezo Pepper's",
-        imagen: "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?w=500&q=80",
+        imagen: "assets/Oklahoma.jpeg",
         variantes: [{ nombre: "Doble", precio: 15500 }, { nombre: "Triple", precio: 16500 }, { nombre: "X4", precio: 18000 }]
     },
     {
         id: "b6", nombre: "CHEESEMIX", ingredientes: "Medallón, Cheddar, Cebolla Crispy, Aderezo Pepper's",
-        imagen: "https://images.unsplash.com/photo-1549611016-3a70d82b5040?w=500&q=80",
+        imagen: "assets/Cheesemix.jpeg",
         variantes: [{ nombre: "Doble", precio: 15500 }, { nombre: "Triple", precio: 16500 }, { nombre: "X4", precio: 18000 }]
     }
 ];
 
 const menuExtras = [
-    { id: "e1", nombre: "Papas Fritas", precio: 6500, imagen: "https://images.unsplash.com/photo-1576107232684-1279f390859f?w=500&q=80" },
-    { id: "e2", nombre: "Menú Veggie", precio: 14500, imagen: "https://images.unsplash.com/photo-1520072959219-c595dc870360?w=500&q=80" },
-    { id: "e3", nombre: "Nuggets + Papas", precio: 12000, imagen: "https://images.unsplash.com/photo-1562967914-608f82629710?w=500&q=80" }
+    { id: "e1", nombre: "Papas sazonadas", precio: 6500, imagen: "assets/logo.png" },
+    { id: "e2", nombre: "Menú Veggie", ingredientes: "Proteína NotCo en reemplazo de carne", precio: 14500, imagen: "assets/logo.png" },
+    { id: "e3", nombre: "Nuggets", precio: 12000, imagen: "assets/logo.png" }
 ];
 
+// Actualizado el Agua Benedictino
 const menuBebidas = [
-    { id: "beb1", nombre: "Gaseosa", precio: 3000, imagen: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500&q=80" },
-    { id: "beb2", nombre: "Cerveza", precio: 4500, imagen: "https://cervesamontseny.cat/wp-content/uploads/Ampolla-Got-Lager.jpg" },
-    { id: "beb3", nombre: "Gin o Fernet", precio: 6000, imagen: "https://images.unsplash.com/photo-1497534446932-c925b458314e?w=500&q=80" }
+    { id: "beb1", nombre: "Coca Cola (500ml)", precio: 3000, imagen: "assets/cocacola.png" },
+    { id: "beb2", nombre: "Coca Cola Zero (500ml)", precio: 3000, imagen: "assets/cocacola.png" },
+    { id: "beb3", nombre: "Sprite (500ml)", precio: 3000, imagen: "assets/sprite.png" },
+    { id: "beb4", nombre: "Fanta (500ml)", precio: 3000, imagen: "assets/fanta.png" },
+    { id: "beb5", nombre: "Aquarius (500ml)", precio: 3000, imagen: "assets/aquarius.png" },
+    { id: "beb6", nombre: "Agua Benedictino (500ml)", precio: 2500, imagen: "assets/benedictino.png" }, // Imagen actualizada
+    { id: "beb7", nombre: "Cerveza", precio: 4500, imagen: "assets/artesanalpampabrewingco.webp" }
 ];
 
 let carrito = [];
@@ -60,10 +65,13 @@ const inputNotas = document.getElementById('pedido-notas');
 function renderizarMenu() {
     menuBurgers.forEach(burger => {
         let opcionesSelect = burger.variantes.map(v => `<option value="${v.nombre}|${v.precio}">${v.nombre} - $${v.precio}</option>`).join('');
+        
+        let claseImagen = burger.imagen.includes('logo.png') ? 'product-img img-contain' : 'product-img';
+        
         const div = document.createElement('div');
         div.classList.add('product-card');
         div.innerHTML = `
-            <img src="${burger.imagen}" alt="${burger.nombre}" class="product-img">
+            <img src="${burger.imagen}" alt="${burger.nombre}" class="${claseImagen}">
             <div class="product-info">
                 <h3 class="product-title">${burger.nombre}</h3>
                 <p class="product-desc">${burger.ingredientes}</p>
@@ -76,13 +84,17 @@ function renderizarMenu() {
     });
 
     [...menuExtras, ...menuBebidas].forEach(item => {
+        
+        let claseImagen = item.imagen.includes('logo.png') ? 'product-img img-contain' : 'product-img';
+        
         const div = document.createElement('div');
         div.classList.add('product-card');
         const cont = item.id.startsWith('e') ? contenedorExtras : contenedorBebidas;
         div.innerHTML = `
-            <img src="${item.imagen}" alt="${item.nombre}" class="product-img">
+            <img src="${item.imagen}" alt="${item.nombre}" class="${claseImagen}">
             <div class="product-info">
                 <h3 class="product-title">${item.nombre}</h3>
+                ${item.ingredientes ? `<p class="product-desc">${item.ingredientes}</p>` : ''}
                 <div class="product-actions" style="margin-top: auto;">
                     <button class="btn-add" onclick="agregarItem('${item.nombre}', ${item.precio}, event)">Agregar $${item.precio}</button>
                 </div>
