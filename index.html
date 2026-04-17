@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pepper's Burger and Company</title>
+    <link rel="icon" href="assets/icono.png" type="image/png">
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Gochi+Hand&family=Montserrat:wght@400;600;800&family=Shrikhand&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -90,7 +91,7 @@
         <footer class="site-footer">
             <div class="footer-info">
                 <p><i class="fa-solid fa-location-dot"></i> Libertad 4597 esq. Italia, Mar del Plata</p>
-                <p><i class="fa-regular fa-clock"></i> Martes a Domingo 20:00 - 23:00</p>
+                <p id="footer-horarios"><i class="fa-regular fa-clock"></i> Martes a Domingo 20:00 - 23:00</p>
             </div>
             <a href="https://www.instagram.com/peppers.mdp/" target="_blank" class="btn-instagram">
                 <i class="fa-brands fa-instagram"></i> Seguinos en Instagram
@@ -99,6 +100,9 @@
     </div>
 
     <div id="notificacion" class="toast-notification">¡Agregado al pedido!</div>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

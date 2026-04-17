@@ -1,55 +1,21 @@
-const menuBurgers = [
-    {
-        id: "b1", nombre: "CHEESY", ingredientes: "Medallón, Cheddar, Cebolla, Aderezo 1/4, Pepinillo",
-        imagen: "assets/cheesy.jpeg",
-        variantes: [{ nombre: "Doble", precio: 15500 }, { nombre: "Triple", precio: 16500 }, { nombre: "X4", precio: 18000 }]
-    },
-    {
-        id: "b2", nombre: "CHEESEBACON", ingredientes: "Medallón, Cheddar, Bacon, Aderezo Pepper's",
-        imagen: "assets/CHEESEBACON.jpg",
-        variantes: [{ nombre: "Doble", precio: 15500 }, { nombre: "Triple", precio: 16500 }, { nombre: "X4", precio: 18000 }]
-    },
-    {
-        id: "b3", nombre: "BIG PEPPER", ingredientes: "Medallón, Cheddar, Cebolla, Lechuga, Pepinillo, Aderezo Pepper's",
-        imagen: "assets/BigPEPPER.jpeg",
-        variantes: [{ nombre: "Doble", precio: 15500 }, { nombre: "Triple", precio: 16500 }, { nombre: "X4", precio: 18000 }]
-    },
-    {
-        id: "b4", nombre: "SMOKE AMERICAN", ingredientes: "Medallón, Cheddar, Lechuga, Tomate, Aderezo Pepper's",
-        imagen: "assets/SmokeAmerican.jpeg",
-        variantes: [{ nombre: "Doble", precio: 15500 }, { nombre: "Triple", precio: 16500 }, { nombre: "X4", precio: 18000 }]
-    },
-    {
-        id: "b5", nombre: "OKLAHOMA", ingredientes: "Medallón, Cheddar, Cebolla, Aderezo Pepper's",
-        imagen: "assets/Oklahoma.jpeg",
-        variantes: [{ nombre: "Doble", precio: 15500 }, { nombre: "Triple", precio: 16500 }, { nombre: "X4", precio: 18000 }]
-    },
-    {
-        id: "b6", nombre: "CHEESEMIX", ingredientes: "Medallón, Cheddar, Cebolla Crispy, Aderezo Pepper's",
-        imagen: "assets/Cheesemix.jpeg",
-        variantes: [{ nombre: "Doble", precio: 15500 }, { nombre: "Triple", precio: 16500 }, { nombre: "X4", precio: 18000 }]
-    }
-];
+// --- CONFIGURACIÓN REAL DE FIREBASE ---
+const firebaseConfig = {
+    apiKey: "AIzaSyA8lOB2niy4NFETfZK6nXU2Ls82lo8hhVQ",
+    authDomain: "peppersburgerandcompany.firebaseapp.com",
+    projectId: "peppersburgerandcompany",
+    storageBucket: "peppersburgerandcompany.firebasestorage.app",
+    messagingSenderId: "692265593199",
+    appId: "1:692265593199:web:64ea770615566834aaa09a",
+    measurementId: "G-HSXZ5TNY17"
+};
 
-const menuExtras = [
-    { id: "e1", nombre: "Papas sazonadas", precio: 6500, imagen: "assets/logo.png" },
-    { id: "e2", nombre: "Menú Veggie", ingredientes: "Proteína NotCo en reemplazo de carne", precio: 14500, imagen: "assets/logo.png" },
-    { id: "e3", nombre: "Nuggets", precio: 12000, imagen: "assets/logo.png" }
-];
-
-// Actualizado el Agua Benedictino
-const menuBebidas = [
-    { id: "beb1", nombre: "Coca Cola (500ml)", precio: 3000, imagen: "assets/cocacola.png" },
-    { id: "beb2", nombre: "Coca Cola Zero (500ml)", precio: 3000, imagen: "assets/cocacola.png" },
-    { id: "beb3", nombre: "Sprite (500ml)", precio: 3000, imagen: "assets/sprite.png" },
-    { id: "beb4", nombre: "Fanta (500ml)", precio: 3000, imagen: "assets/fanta.png" },
-    { id: "beb5", nombre: "Aquarius (500ml)", precio: 3000, imagen: "assets/aquarius.png" },
-    { id: "beb6", nombre: "Agua Benedictino (500ml)", precio: 2500, imagen: "assets/benedictino.png" }, // Imagen actualizada
-    { id: "beb7", nombre: "Cerveza", precio: 4500, imagen: "assets/artesanalpampabrewingco.webp" }
-];
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.firestore();
 
 let carrito = [];
-const NUMERO_WHATSAPP = "541122454518"; 
+let numeroWhatsappGlobal = "541122454518"; 
 
 const contenedorBurgers = document.getElementById('productos-contenedor');
 const contenedorExtras = document.getElementById('extras-contenedor');
@@ -62,45 +28,85 @@ const cartCounter = document.getElementById('cart-counter');
 const btnWhatsApp = document.getElementById('btn-whatsapp');
 const inputNotas = document.getElementById('pedido-notas');
 
-function renderizarMenu() {
-    menuBurgers.forEach(burger => {
-        let opcionesSelect = burger.variantes.map(v => `<option value="${v.nombre}|${v.precio}">${v.nombre} - $${v.precio}</option>`).join('');
-        
-        let claseImagen = burger.imagen.includes('logo.png') ? 'product-img img-contain' : 'product-img';
-        
-        const div = document.createElement('div');
-        div.classList.add('product-card');
-        div.innerHTML = `
-            <img src="${burger.imagen}" alt="${burger.nombre}" class="${claseImagen}">
-            <div class="product-info">
-                <h3 class="product-title">${burger.nombre}</h3>
-                <p class="product-desc">${burger.ingredientes}</p>
-                <div class="product-actions">
-                    <select id="select-${burger.id}" class="size-selector">${opcionesSelect}</select>
-                    <button class="btn-add" onclick="agregarBurger('${burger.id}', '${burger.nombre}', event)">Agregar al Pedido</button>
-                </div>
-            </div>`;
-        contenedorBurgers.appendChild(div);
-    });
+// ================= ESCUCHAR AJUSTES EN TIEMPO REAL =================
+function escucharAjustes() {
+    db.collection("configuracion").doc("general").onSnapshot((doc) => {
+        const footerHorarios = document.getElementById('footer-horarios');
 
-    [...menuExtras, ...menuBebidas].forEach(item => {
-        
-        let claseImagen = item.imagen.includes('logo.png') ? 'product-img img-contain' : 'product-img';
-        
-        const div = document.createElement('div');
-        div.classList.add('product-card');
-        const cont = item.id.startsWith('e') ? contenedorExtras : contenedorBebidas;
-        div.innerHTML = `
-            <img src="${item.imagen}" alt="${item.nombre}" class="${claseImagen}">
-            <div class="product-info">
-                <h3 class="product-title">${item.nombre}</h3>
-                ${item.ingredientes ? `<p class="product-desc">${item.ingredientes}</p>` : ''}
-                <div class="product-actions" style="margin-top: auto;">
-                    <button class="btn-add" onclick="agregarItem('${item.nombre}', ${item.precio}, event)">Agregar $${item.precio}</button>
-                </div>
-            </div>`;
-        cont.appendChild(div);
+        if (doc.exists) {
+            const data = doc.data();
+            
+            // Actualizamos el WhatsApp global
+            numeroWhatsappGlobal = data.whatsapp || "541122454518";
+
+            // Actualizamos el texto del pie de página si hay horarios
+            if (footerHorarios && data.horarios) {
+                footerHorarios.innerHTML = `<i class="fa-regular fa-clock"></i> ${data.horarios}`;
+            }
+        }
     });
+}
+
+// ================= CARGAR MENÚ =================
+function cargarMenuDesdeDB() {
+    db.collection("productos").orderBy("categoria").get().then((querySnapshot) => {
+        contenedorBurgers.innerHTML = ''; contenedorExtras.innerHTML = ''; contenedorBebidas.innerHTML = '';
+        if (querySnapshot.empty) return;
+
+        querySnapshot.forEach((doc) => {
+            const p = doc.data();
+            const div = document.createElement('div');
+            div.classList.add('product-card');
+            
+            let imagenUrl = p.imagen ? p.imagen : 'assets/logo.png';
+            let claseImg = imagenUrl.includes('logo.png') ? 'product-img img-contain' : 'product-img';
+            let nombre = p.nombre ? p.nombre : 'Producto';
+            let desc = p.desc ? p.desc : '';
+
+            let productActions = '';
+
+            if (p.categoria === 'burgers' && p.variantes && p.variantes.length > 0) {
+                let opcionesHTML = p.variantes.map(v => `<option value="${v.nombre}|${v.precio}">${v.nombre} - $${v.precio.toLocaleString('es-AR')}</option>`).join('');
+                productActions = `
+                    <select id="select-${doc.id}" class="size-selector">
+                        ${opcionesHTML}
+                    </select>
+                    <button class="btn-add" onclick="agregarBurger('${doc.id}', '${nombre}', event)">Agregar al Pedido</button>
+                `;
+            } else {
+                let precioNum = p.precio ? parseInt(p.precio) : 0;
+                productActions = `
+                    <button class="btn-add" onclick="agregarItem('${nombre}', ${precioNum}, event)">Agregar $${precioNum.toLocaleString('es-AR')}</button>
+                `;
+            }
+
+            div.innerHTML = `
+                <img src="${imagenUrl}" alt="${nombre}" class="${claseImg}">
+                <div class="product-info">
+                    <h3 class="product-title">${nombre}</h3>
+                    <p class="product-desc">${desc}</p>
+                    <div class="product-actions">
+                        ${productActions}
+                    </div>
+                </div>`;
+
+            if(p.categoria === 'burgers') contenedorBurgers.appendChild(div);
+            else if(p.categoria === 'extras') contenedorExtras.appendChild(div);
+            else if(p.categoria === 'bebidas') contenedorBebidas.appendChild(div);
+        });
+    });
+}
+
+function agregarBurger(idDoc, nombreBase, event) {
+    animarVuelo(event);
+    const selector = document.getElementById(`select-${idDoc}`);
+    const valores = selector.value.split('|');
+    const varianteNombre = valores[0];
+    const precio = parseInt(valores[1]);
+    
+    carrito.push({ nombre: `${nombreBase} (${varianteNombre})`, precio: precio });
+    actualizarCarrito();
+    mostrarNotificacion(`¡${nombreBase} agregada!`);
 }
 
 function animarVuelo(event) {
@@ -126,8 +132,7 @@ function animarVuelo(event) {
 
 function mostrarNotificacion(mensaje) {
     const t = document.getElementById('notificacion');
-    t.innerText = mensaje; 
-    t.classList.add('show');
+    t.innerText = mensaje; t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3000);
 }
 
@@ -137,32 +142,22 @@ function activarSacudidaCarrito() {
     setTimeout(() => btn.classList.remove('cart-animate'), 400);
 }
 
-function agregarBurger(id, nombre, event) {
-    animarVuelo(event);
-    const s = document.getElementById(`select-${id}`);
-    const [v, p] = s.value.split('|');
-    carrito.push({ nombre: `${nombre} (${v})`, precio: parseInt(p) });
-    actualizarCarrito();
-    mostrarNotificacion(`¡${nombre} agregada al pedido!`);
-}
-
 function agregarItem(n, p, event) {
     animarVuelo(event);
     carrito.push({ nombre: n, precio: p });
     actualizarCarrito();
-    mostrarNotificacion(`¡${n} agregado al pedido!`);
+    mostrarNotificacion(`¡${n} agregado!`);
 }
 
 function eliminarItem(i) { 
-    carrito.splice(i, 1); 
-    actualizarCarrito(); 
+    carrito.splice(i, 1); actualizarCarrito(); 
 }
 
 function actualizarCarrito() {
     listaCarrito.innerHTML = ''; let t = 0;
     cartCounter.innerText = carrito.length;
     if (carrito.length === 0) {
-        listaCarrito.innerHTML = '<p style="text-align:center; padding: 20px; color:#888;">No agregaste nada todavía.</p>';
+        listaCarrito.innerHTML = '<p style="text-align:center; padding: 20px; color:#888;">Vacío.</p>';
         btnWhatsApp.disabled = true;
     } else {
         btnWhatsApp.disabled = false;
@@ -178,17 +173,8 @@ function actualizarCarrito() {
     precioTotalDOM.innerText = "$" + t.toLocaleString('es-AR');
 }
 
-function abrirCarrito() { 
-    cartSidebar.classList.add('active'); 
-    cartOverlay.classList.add('active'); 
-    document.body.classList.add('no-scroll'); 
-}
-
-function cerrarCarrito() { 
-    cartSidebar.classList.remove('active'); 
-    cartOverlay.classList.remove('active'); 
-    document.body.classList.remove('no-scroll'); 
-}
+function abrirCarrito() { cartSidebar.classList.add('active'); cartOverlay.classList.add('active'); document.body.classList.add('no-scroll'); }
+function cerrarCarrito() { cartSidebar.classList.remove('active'); cartOverlay.classList.remove('active'); document.body.classList.remove('no-scroll'); }
 
 function toggleDireccion() {
     const m = document.getElementById('metodo-entrega').value;
@@ -200,13 +186,20 @@ document.getElementById('btn-cerrar-carrito').addEventListener('click', cerrarCa
 cartOverlay.addEventListener('click', cerrarCarrito);
 
 btnWhatsApp.addEventListener('click', () => {
-    let m = "¡Hola Pepper's! 🍔 Mi pedido es:\n\n"; let t = 0;
+    let m = "*NUEVO PEDIDO - PEPPER'S*\n\n"; let t = 0;
     carrito.forEach(i => { m += `- ${i.nombre}: $${i.precio}\n`; t += i.precio; });
-    m += `\n💰 *Total: $${t.toLocaleString('es-AR')}*\n💳 *Pago:* ${document.getElementById('metodo-pago').value}\n🛵 *Entrega:* ${document.getElementById('metodo-entrega').value}`;
-    if (document.getElementById('metodo-entrega').value === "Delivery") m += `\n📍 *Dirección:* ${document.getElementById('direccion-envio').value}`;
-    if (inputNotas.value.trim() !== "") m += `\n📝 *Aclaraciones:* ${inputNotas.value.trim()}`;
-    window.open(`https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(m)}`, '_blank');
+    m += `\n*Total:* $${t.toLocaleString('es-AR')}\n`;
+    m += `*Pago:* ${document.getElementById('metodo-pago').value}\n`;
+    m += `*Entrega:* ${document.getElementById('metodo-entrega').value}\n`;
+    if (document.getElementById('metodo-entrega').value === "Delivery") {
+        m += `*Dirección:* ${document.getElementById('direccion-envio').value}\n`;
+    }
+    if (inputNotas.value.trim() !== "") m += `*Aclaraciones:* ${inputNotas.value.trim()}`;
+    
+    // Usamos el WhatsApp guardado en la base de datos
+    window.open(`https://wa.me/${numeroWhatsappGlobal}?text=${encodeURIComponent(m)}`, '_blank');
 });
 
-renderizarMenu(); 
-actualizarCarrito();
+// Inicialización
+escucharAjustes();
+cargarMenuDesdeDB();

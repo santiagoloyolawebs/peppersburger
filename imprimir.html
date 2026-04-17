@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impresión de Comandas - Pepper's</title>
+    <style>
+        /* === ESTILOS DEL PANEL DE CONTROL (PC) === */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e9ecef;
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+            color: #111;
+            margin: 0;
+        }
+
+        .contenedor-principal {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .panel-control {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .panel-control h3 { margin-top: 0; color: #c23b22; }
+
+        textarea {
+            width: 100%;
+            height: 180px;
+            margin-bottom: 15px;
+            padding: 15px;
+            font-family: inherit;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #c23b22;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        button:hover { background-color: #a02e19; }
+
+        /* === ESTILOS DEL TICKET TIPO RESTAURANT === */
+        #ticket-preview {
+            background: white;
+            width: 300px; /* Ancho para ticketera de 80mm */
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            display: none; 
+            text-align: left;
+            font-family: Arial, Helvetica, sans-serif; 
+            color: black;
+            text-transform: uppercase; 
+        }
+
+        .ticket-header { text-align: center; margin-bottom: 15px; }
+        .ticket-header h2 { margin: 0; font-size: 1.6rem; font-weight: 900; }
+        .ticket-header p { margin: 2px 0; font-size: 0.75rem; }
+        
+        .divisor {
+            border-top: 1px dashed black;
+            margin: 10px 0;
+        }
+
+        .info-basica { font-size: 0.8rem; margin-bottom: 10px; }
+        
+        .tabla-items { width: 100%; margin-bottom: 10px; border-collapse: collapse; }
+        .tabla-items th { font-size: 0.75rem; text-align: left; border-bottom: 1px dashed black; padding-bottom: 5px; margin-bottom: 5px;}
+        .ticket-item { display: flex; font-size: 0.85rem; margin-top: 5px; font-weight: bold;}
+        .item-qty { width: 15%; }
+        .item-name { width: 60%; padding-right: 5px; word-break: break-word;}
+        .item-price { width: 25%; text-align: right; }
+
+        .totales { margin-top: 10px; font-size: 1.1rem; font-weight: 900; display: flex; justify-content: space-between; }
+        
+        .info-entrega { font-size: 0.85rem; margin-top: 15px; background-color: #f0f0f0; padding: 10px; border-radius: 5px;}
+        .info-entrega p { margin: 3px 0; }
+
+        .ticket-footer { text-align: center; font-size: 0.75rem; margin-top: 20px; }
+        .ticket-footer p { margin: 3px 0; }
+
+        @media print {
+            body { background-color: white; padding: 0; margin: 0; }
+            .panel-control { display: none; }
+            
+            #ticket-preview {
+                display: block !important; 
+                width: 100%;
+                max-width: 80mm; 
+                box-shadow: none;
+                margin: 0;
+                padding: 0;
+            }
+            .info-entrega { background-color: transparent; padding: 0; } 
+            @page { margin: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="contenedor-principal">
+        <div class="panel-control">
+            <h3>Generador de Comandas Pepper's</h3>
+            <p style="font-size: 0.9rem; color: #555;">Pegá el pedido exacto que generó la página por WhatsApp:</p>
+            <textarea id="texto-whatsapp" placeholder="*NUEVO PEDIDO - PEPPER'S*..."></textarea>
+            <br>
+            <button onclick="procesarEImprimir()">Procesar e Imprimir</button>
+        </div>
+
+        <div id="ticket-preview">
+            <div class="ticket-header">
+                <h2>PEPPER'S</h2>
+                <p>BURGER AND COMPANY</p>
+                <p>Libertad 4597 esq. Italia</p>
+                <p>Mar del Plata, BA</p>
+                <p>CUIT: 30-XXXXXXXX-X</p>
+            </div>
+            
+            <div class="divisor"></div>
+            
+            <div class="info-basica">
+                <div style="display: flex; justify-content: space-between;">
+                    <span id="t-fecha">Fecha: --/--/----</span>
+                    <span id="t-hora">Hora: --:--</span>
+                </div>
+            </div>
+
+            <div class="divisor"></div>
+
+            <div style="text-align: center; font-size: 1.2rem; font-weight: bold; margin: 10px 0;">
+                ORDEN WEB
+            </div>
+
+            <div class="tabla-items">
+                <div style="display: flex; font-size: 0.7rem; border-bottom: 1px dashed #000; padding-bottom: 3px;">
+                    <span style="width: 15%;">Ctd</span>
+                    <span style="width: 60%;">Descripción</span>
+                    <span style="width: 25%; text-align: right;">Precio</span>
+                </div>
+                <div id="t-lista-items">
+                    </div>
+            </div>
+
+            <div class="divisor"></div>
+
+            <div class="totales">
+                <span>TOTAL</span>
+                <span id="t-total">$0</span>
+            </div>
+
+            <div class="info-entrega" id="t-info-entrega">
+                </div>
+
+            <div class="divisor"></div>
+            
+            <div class="ticket-footer">
+                <p>GRACIAS POR SU COMPRA</p>
+                <p>Seguinos en IG: @peppers.mdp</p>
+                <p>*** COPIA CLIENTE / COCINA ***</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function procesarEImprimir() {
+            const texto = document.getElementById('texto-whatsapp').value;
+            
+            if(texto.trim() === '') {
+                alert("Por favor, pegá el texto del pedido primero.");
+                return;
+            }
+
+            const lineas = texto.split('\n');
+            let htmlItems = '';
+            let total = '0';
+            let metodoPago = '';
+            let metodoEntrega = '';
+            let direccion = '';
+            let notas = '';
+
+            for (let i = 0; i < lineas.length; i++) {
+                let linea = lineas[i].trim();
+
+                // 1. Extraer los productos
+                if (linea.startsWith('- ')) {
+                    let partes = linea.substring(2).split(': $');
+                    let nombreItem = partes[0];
+                    let precioItem = partes[1] ? partes[1] : '0'; 
+                    
+                    htmlItems += `
+                        <div class="ticket-item">
+                            <span class="item-qty">1</span>
+                            <span class="item-name">${nombreItem}</span>
+                            <span class="item-price">$${parseFloat(precioItem).toLocaleString('es-AR')}</span>
+                        </div>
+                    `;
+                }
+                
+                // 2. Extraer el Total
+                if (linea.includes('*Total:*')) {
+                    total = linea.split('$')[1] ? linea.split('$')[1].trim() : linea.replace('*Total:*', '').trim();
+                }
+                
+                // 3. Extraer Pago
+                if (linea.includes('*Pago:*')) {
+                    metodoPago = linea.split('*Pago:*')[1].trim();
+                }
+
+                // 4. Extraer Entrega
+                if (linea.includes('*Entrega:*')) {
+                    metodoEntrega = linea.split('*Entrega:*')[1].trim();
+                }
+
+                // 5. Extraer Dirección
+                if (linea.includes('*Dirección:*')) {
+                    direccion = linea.split('*Dirección:*')[1].trim();
+                }
+
+                // 6. Extraer Aclaraciones/Notas
+                if (linea.includes('*Aclaraciones:*')) {
+                    notas = linea.split('*Aclaraciones:*')[1].trim();
+                }
+            }
+
+            const ahora = new Date();
+            const fecha = ahora.toLocaleDateString('es-AR');
+            const hora = ahora.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+
+            document.getElementById('t-fecha').innerText = `Fecha: ${fecha}`;
+            document.getElementById('t-hora').innerText = `Hora: ${hora}`;
+            document.getElementById('t-lista-items').innerHTML = htmlItems;
+            document.getElementById('t-total').innerText = `$${total}`;
+
+            let htmlEntrega = `
+                <p><strong>MODO:</strong> ${metodoEntrega}</p>
+                <p><strong>PAGO:</strong> ${metodoPago}</p>
+            `;
+            if (direccion !== '') {
+                htmlEntrega += `<p><strong>DIR:</strong> ${direccion}</p>`;
+            }
+            if (notas !== '') {
+                htmlEntrega += `<div class="divisor"></div><p><strong>NOTAS:</strong> ${notas}</p>`;
+            }
+            document.getElementById('t-info-entrega').innerHTML = htmlEntrega;
+
+            document.getElementById('ticket-preview').style.display = 'block';
+            
+            setTimeout(() => {
+                window.print();
+            }, 300);
+        }
+    </script>
+</body>
+</html>
