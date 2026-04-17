@@ -6,28 +6,28 @@
     <title>Admin Dashboard - Pepper's</title>
     <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="/admin/admin.css">
 </head>
 <body>
 
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-                <img src="../assets/logo.png" alt="Pepper's Logo" class="logo-img" style="height: 45px; width: auto;">
+                <img src="/assets/logo.png" alt="Pepper's Logo" class="logo-img" style="height: 45px; width: auto;">
             </div>
-            <a href="../index.html" class="nav-link-inicio">
+            <a href="/" class="nav-link-inicio">
                 <i class="fa-solid fa-house"></i> Inicio
             </a>
         </div>
     </nav>
 
     <div id="pantalla-carga" style="height: 100vh; display: flex; align-items: center; justify-content: center; z-index: 9999; position: fixed; top: 0; left: 0; width: 100%; background: #f4f5f7;">
-        <img src="../assets/logo.png" alt="Cargando..." style="height: 100px; width: auto;" class="pulse-anim">
+        <img src="/assets/logo.png" alt="Cargando..." style="height: 100px; width: auto;" class="pulse-anim">
     </div>
 
     <div id="auth-container" class="auth-wrapper" style="display: none;">
         <div id="login-section" class="login-card">
-            <img src="../assets/logo.png" alt="Logo Pepper's" class="auth-logo" style="height: 60px; width: auto; margin-bottom: 20px;">
+            <img src="/assets/logo.png" alt="Logo Pepper's" class="auth-logo" style="height: 60px; width: auto; margin-bottom: 20px;">
             <h2 style="margin-top: 10px;">Panel Administrativo</h2>
             <p class="auth-subtitle">Acceso exclusivo para el equipo.</p>
             <button class="btn-google" onclick="loginGoogle()">
@@ -37,7 +37,7 @@
         </div>
 
         <div id="registro-section" class="login-card" style="display: none;">
-            <img src="../assets/logo.png" alt="Logo" class="auth-logo" style="height: 60px; width: auto; margin-bottom: 20px;">
+            <img src="/assets/logo.png" alt="Logo" class="auth-logo" style="height: 60px; width: auto; margin-bottom: 20px;">
             <h2 style="margin-top: 10px;">Completar Perfil</h2>
             <p class="auth-subtitle">Tu cuenta fue vinculada. Ingresa tu nombre para guardarte en el sistema.</p>
             <div class="form-group">
@@ -208,6 +208,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="admin.js"></script>
+    <script src="/admin/admin.js"></script>
 </body>
 </html>
