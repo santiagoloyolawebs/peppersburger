@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Pepper's</title>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="admin/admin.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="assets/logo.png" alt="Pepper's Logo" class="logo-img" style="height: 45px; width: auto;">
+            </div>
+            <a href="index.html" class="nav-link-inicio">
+                <i class="fa-solid fa-house"></i> Inicio
+            </a>
+        </div>
+    </nav>
+
+    <div id="pantalla-carga" style="height: 100vh; display: flex; align-items: center; justify-content: center; z-index: 9999; position: fixed; top: 0; left: 0; width: 100%; background: #f4f5f7;">
+        <img src="assets/logo.png" alt="Cargando..." style="height: 100px; width: auto;" class="pulse-anim">
+    </div>
+
+    <div id="auth-container" class="auth-wrapper" style="display: none;">
+        <div id="login-section" class="login-card">
+            <img src="assets/logo.png" alt="Logo Pepper's" class="auth-logo" style="height: 60px; width: auto; margin-bottom: 20px;">
+            <h2 style="margin-top: 10px;">Panel Administrativo</h2>
+            <p class="auth-subtitle">Acceso exclusivo para el equipo.</p>
+            <button class="btn-google" onclick="loginGoogle()">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" style="width: 20px;">
+                Ingresar con Google
+            </button>
+        </div>
+
+        <div id="registro-section" class="login-card" style="display: none;">
+            <img src="assets/logo.png" alt="Logo" class="auth-logo" style="height: 60px; width: auto; margin-bottom: 20px;">
+            <h2 style="margin-top: 10px;">Completar Perfil</h2>
+            <p class="auth-subtitle">Tu cuenta fue vinculada. Ingresa tu nombre para guardarte en el sistema.</p>
+            <div class="form-group">
+                <label>Nombre y Apellido</label>
+                <input type="text" id="r-nombre" placeholder="Ej: Santiago Loyola">
+            </div>
+            <button class="btn-admin" onclick="completarRegistro()">Completar Registro</button>
+            <button class="btn-admin btn-cancel" onclick="cancelarRegistro()">Cancelar</button>
+        </div>
+    </div>
+
+    <div id="dashboard-container" class="dashboard-wrapper">
+        <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleMenu()"></div>
+
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header" style="padding-top: 25px;">
+                <div class="sidebar-subtitle" style="font-size: 0.9rem; color: #111;">SISTEMA DE GESTIÓN</div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-item active" onclick="cambiarTab('productos', this)">
+                    <i class="fa-solid fa-burger"></i> Menú y Productos
+                </div>
+                <div class="nav-item" onclick="cambiarTab('ajustes', this)">
+                    <i class="fa-solid fa-gear"></i> Ajustes
+                </div>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="nav-item btn-logout" onclick="logout()">
+                    <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="top-bar-left">
+                    <button class="menu-toggle" onclick="toggleMenu()">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <h1 id="header-title">Menú y Productos</h1>
+                </div>
+                <div class="user-info" id="user-display"></div>
+            </header>
+
+            <section id="tab-productos" class="content-section active">
+                <div class="admin-grid">
+                    
+                    <div class="card form-card">
+                        <h3 id="form-title"><i class="fa-solid fa-plus icon-rojo"></i> Nuevo Producto</h3>
+                        <input type="hidden" id="edit-id">
+                        
+                        <div class="form-group">
+                            <label>Nombre del Producto</label>
+                            <input type="text" id="p-nombre" placeholder="Ej: Triple Bacon">
+                        </div>
+                        <div class="form-group">
+                            <label>Categoría</label>
+                            <select id="p-categoria" onchange="cambiarTipoPrecio()">
+                                <option value="burgers">Hamburguesas</option>
+                                <option value="extras">Extras</option>
+                                <option value="bebidas">Bebidas</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Descripción / Ingredientes (Opcional)</label>
+                            <textarea id="p-desc" rows="3" placeholder="Medallón, Cheddar..."></textarea>
+                        </div>
+
+                        <div class="form-group" id="grupo-precio-unico" style="display: none;">
+                            <label>Precio Final ($)</label>
+                            <input type="number" id="p-precio" placeholder="15500">
+                        </div>
+
+                        <div class="form-group" id="grupo-variantes">
+                            <label>Precios por Tamaño ($)</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                                <input type="number" id="p-precio-doble" placeholder="Doble">
+                                <input type="number" id="p-precio-triple" placeholder="Triple">
+                                <input type="number" id="p-precio-x4" placeholder="X4">
+                            </div>
+                            <small style="color: #666; font-size: 0.8rem; margin-top: 5px; display: block;">Solo completá los que ofrezcas.</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Imagen del Producto</label>
+                            <img id="img-preview" src="" alt="Vista previa" style="display: none; width: 100%; height: 160px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; border: 1px solid #eee;">
+                            <input type="file" id="p-img-file" accept="image/*" onchange="previsualizarImagen(event)">
+                            <input type="hidden" id="p-img-url">
+                            <small class="text-muted" style="display: block; margin-top: 5px;">Seleccioná una foto de tu dispositivo. Se subirá automáticamente a la nube.</small>
+                        </div>
+                        
+                        <button class="btn-admin" id="btn-guardar" onclick="guardarProducto()">Guardar Producto</button>
+                        <button class="btn-admin btn-cancel" id="btn-cancelar" onclick="cancelarEdicion()" style="display:none;">Cancelar Edición</button>
+                    </div>
+
+                    <div class="card list-card">
+                        <h3><i class="fa-solid fa-list icon-rojo"></i> Productos Activos</h3>
+                        
+                        <div class="filtros-container">
+                            <input type="text" id="buscador-productos" placeholder="Buscar por nombre..." onkeyup="renderizarListaProductos()">
+                            <div class="filtros-categorias">
+                                <button class="btn-filtro active" data-cat="todos" onclick="filtrarCategoria('todos', this)">Todos</button>
+                                <button class="btn-filtro" data-cat="burgers" onclick="filtrarCategoria('burgers', this)">Burgers</button>
+                                <button class="btn-filtro" data-cat="extras" onclick="filtrarCategoria('extras', this)">Extras</button>
+                                <button class="btn-filtro" data-cat="bebidas" onclick="filtrarCategoria('bebidas', this)">Bebidas</button>
+                            </div>
+                        </div>
+
+                        <div id="lista-admin" class="lista-productos">
+                            <div class="loading-text">Cargando base de datos...</div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <section id="tab-ajustes" class="content-section">
+                <div class="admin-grid">
+                    
+                    <div class="card form-card">
+                        <h3><i class="fa-solid fa-clock icon-rojo"></i> Horarios de Atención</h3>
+                        <p class="text-muted" style="margin-bottom: 15px;">Seleccioná los días que abrís:</p>
+                        
+                        <div class="dias-selector" style="display: flex; gap: 5px; margin-bottom: 20px; flex-wrap: wrap;">
+                            <button class="btn-dia" data-dia="Lunes">L</button>
+                            <button class="btn-dia" data-dia="Martes">M</button>
+                            <button class="btn-dia" data-dia="Miércoles">X</button>
+                            <button class="btn-dia" data-dia="Jueves">J</button>
+                            <button class="btn-dia" data-dia="Viernes">V</button>
+                            <button class="btn-dia" data-dia="Sábado">S</button>
+                            <button class="btn-dia" data-dia="Domingo">D</button>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Rango Horario (Formato 24hs)</label>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    <select id="hora-inicio-h" class="time-sel"></select> <span style="font-weight: 800;">:</span> <select id="hora-inicio-m" class="time-sel"></select>
+                                </div>
+                                <span style="font-weight: 800; color: #c23b22;">a</span>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    <select id="hora-fin-h" class="time-sel"></select> <span style="font-weight: 800;">:</span> <select id="hora-fin-m" class="time-sel"></select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn-admin" onclick="guardarHorarios()">Guardar solo Horarios</button>
+                    </div>
+
+                    <div class="card form-card">
+                        <h3><i class="fa-brands fa-whatsapp icon-rojo"></i> WhatsApp de Pedidos</h3>
+                        <div class="form-group">
+                            <label>Número de WhatsApp</label>
+                            <input type="text" id="ajuste-whatsapp" placeholder="Ej: 5491122454518">
+                            <small class="text-muted">Sin el +, sin espacios. Incluir el código de país (Ej: 54 para Argentina).</small>
+                        </div>
+                        <button class="btn-admin" onclick="guardarWhatsapp()">Guardar solo WhatsApp</button>
+                    </div>
+
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <div id="toast-admin" class="toast-admin">¡Acción realizada!</div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <script src="admin/admin.js"></script>
+</body>
+</html>

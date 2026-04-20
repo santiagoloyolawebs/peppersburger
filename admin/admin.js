@@ -19,8 +19,8 @@ const db = firebase.firestore();
 
 let usuarioPendiente = null;
 let productosEnMemoria = {};
-let productosArray = []; // NUEVO: Para guardar y ordenar localmente
-let filtroCategoriaActual = 'todos'; // NUEVO: Para saber qué botón está tocado
+let productosArray = []; 
+let filtroCategoriaActual = 'todos';
 
 // ================= NOTIFICACIONES TOAST =================
 function mostrarNotificacion(mensaje, tipo = 'success') {
@@ -313,7 +313,6 @@ async function guardarProducto() {
         return;
     }
 
-    // Le agregamos la fecha para poder ordenarlo (Date.now() guarda los milisegundos)
     let data = { 
         nombre: nombre, 
         categoria: categoria, 
@@ -374,7 +373,6 @@ async function guardarProducto() {
     }
 }
 
-// Carga principal: solo trae de Firebase y lo mete al array local
 function cargarProductosAdmin() {
     db.collection("productos").get().then((querySnapshot) => {
         productosArray = [];
@@ -383,7 +381,6 @@ function cargarProductosAdmin() {
         querySnapshot.forEach((doc) => {
             const p = doc.data();
             p.id = doc.id;
-            // Si hay un producto viejo sin fecha, le ponemos 0 para que vaya al fondo
             p.fechaModificacion = p.fechaModificacion || 0; 
             
             productosEnMemoria[doc.id] = p;
@@ -394,14 +391,10 @@ function cargarProductosAdmin() {
     });
 }
 
-// NUEVO: Funciones de filtro y búsqueda local
 function filtrarCategoria(cat, elemento) {
     filtroCategoriaActual = cat;
-    
-    // Cambiamos los colores de los botones
     document.querySelectorAll('.btn-filtro').forEach(btn => btn.classList.remove('active'));
     elemento.classList.add('active');
-    
     renderizarListaProductos();
 }
 
@@ -409,14 +402,12 @@ function renderizarListaProductos() {
     const lista = document.getElementById('lista-admin');
     const terminoBusqueda = document.getElementById('buscador-productos').value.toLowerCase();
     
-    // 1. Filtramos (por texto y por botón)
     let filtrados = productosArray.filter(p => {
         const coincideCat = filtroCategoriaActual === 'todos' || p.categoria === filtroCategoriaActual;
         const coincideTexto = p.nombre.toLowerCase().includes(terminoBusqueda);
         return coincideCat && coincideTexto;
     });
 
-    // 2. Ordenamos (el que tiene la fecha más alta, va arriba de todo)
     filtrados.sort((a, b) => b.fechaModificacion - a.fechaModificacion);
 
     lista.innerHTML = '';
@@ -428,8 +419,6 @@ function renderizarListaProductos() {
 
     filtrados.forEach(p => {
         let precioMostrar = p.variantes && p.variantes.length > 0 ? `Desde $${p.variantes[0].precio.toLocaleString('es-AR')}` : `$${p.precio.toLocaleString('es-AR')}`;
-        
-        // Un detalle visual para que la etiqueta diga algo lindo
         let catNombre = p.categoria === 'burgers' ? 'Hamburguesa' : (p.categoria === 'extras' ? 'Extra' : 'Bebida');
 
         lista.innerHTML += `
@@ -461,7 +450,8 @@ function prepararEdicion(id) {
     document.getElementById('p-img-file').value = ""; 
     const preview = document.getElementById('img-preview');
     
-    preview.src = p.imagen.startsWith('assets/') ? `../${p.imagen}` : p.imagen;
+    // ARREGLO PARA QUE LAS FOTOS VIEJAS CARGUEN BIEN EN LA RAÍZ
+    preview.src = p.imagen;
     preview.style.display = 'block';
     
     cambiarTipoPrecio();
